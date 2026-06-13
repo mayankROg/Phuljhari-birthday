@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Happy Birthday Tulsi</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Comic Sans MS', cursive;
+      text-align: center;
+      background: #fff0f5;
+      overflow: hidden;
+    }
+    .screen {
+      display: none;
+      height: 100vh;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    .active {
+      display: flex;
+    }
+    h1 {
+      font-size: 3em;
+      color: #d63384;
+    }
+    p {
+      font-size: 1.5em;
+      color: #ff4081;
+      margin: 10px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 15px 30px;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 10px;
+      background: #ff66b2;
+      color: white;
+      cursor: pointer;
+      position: absolute;
+      transition: all 0.3s ease;
+    }
+    button:hover {
+      background: #ff3385;
+    }
+    img {
+      max-width: 80%;
+      max-height: 60vh;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    }
+    @keyframes fall {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(110vh); }
+    }
+    #finalMessage {
+      display: none;
+      font-size: 2em;
+      color: #d63384;
+      margin-top: 20px;
+      animation: fadeIn 2s ease forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Screen 1 -->
+  <div id="screen1" class="screen active">
+    <h1>🎉 Happy Birthday dear Tulsi 🎉</h1>
+    <p id="tease"></p>
+    <button id="openBtn">Tap to open</button>
+  </div>
+
+  <!-- Screen 2 -->
+  <div id="screen2" class="screen">
+    <img src="bear-chasing.png" alt="Bear chasing cake">
+    <p id="banter">Oh no! The cake is running away!</p>
+    <button onclick="nextScreen(3)">Tap to chase</button>
+  </div>
+
+  <!-- Screen 3 -->
+  <div id="screen3" class="screen">
+    <img src="bear-eating.png" alt="Bear eating cake">
+    <p id="banter2">Gotcha! You caught the cake! Time to take a bite!</p>
+    <button onclick="nextScreen(4)">Tap to celebrate</button>
+  </div>
+
+  <!-- Screen 4 -->
+  <div id="screen4" class="screen">
+    <h1>🎂 Happy Birthday Tulsi 🎂</h1>
+    <img id="slideshow" src="" alt="Tulsi's photos">
+    <audio id="music" src="happy-birthday.mp3" loop></audio>
+    <div id="finalMessage">Tulsi, you’re the sweetest cake of them all! 💖🎂</div>
+  </div>
+
+  <script>
+    // Teasing banters for moving button
+    const teaseLines = [
+      "Its not that easy haaan!!",
+      "Try hard 😜",
+      "Again please!",
+      "Do it yaar!",
+      "Almost got me!",
+      "Haha missed again!",
+      "Keep chasing!",
+      "Okay fine, I’ll stop now 😅"
+    ];
+    let moveCount = 0;
+
+    const openBtn = document.getElementById("openBtn");
+    const teaseText = document.getElementById("tease");
+
+    // Mobile-friendly: use click instead of hover
+    openBtn.addEventListener("click", (e) => {
+      if (moveCount < 8) {
+        e.preventDefault(); // prevent triggering nextScreen too early
+        const x = Math.random() * (window.innerWidth - 150);
+        const y = Math.random() * (window.innerHeight - 100);
+        openBtn.style.left = x + "px";
+        openBtn.style.top = y + "px";
+        teaseText.textContent = teaseLines[moveCount];
+        moveCount++;
+      } else {
+        nextScreen(2);
+      }
+    });
+
+    function nextScreen(n) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('screen' + n).classList.add('active');
+      if(n === 2) cycleBanter();
+      if(n === 4) {
+        startSlideshow();
+        startEmojiShower();
+        // Start music after user interaction
+        const music = document.getElementById("music");
+        music.play().catch(() => {
+          console.log("Autoplay blocked, will play after tap.");
+        });
+      }
+    }
+
+    // Funny banters for bear chase
+    const banters = [
+      "Oh no! The cake is running away!",
+      "Catch it if you can!",
+      "Hurry Tulsi, tap fast before it escapes!",
+      "The cake’s got legs!",
+      "Quick! It’s sprinting toward the fridge!"
+    ];
+    let bIndex = 0;
+    function cycleBanter() {
+      const p = document.getElementById("banter");
+      setInterval(() => {
+        bIndex = (bIndex + 1) % banters.length;
+        p.textContent = banters[bIndex];
+      }, 2000);
+    }
+
+    // Slideshow
+    const photos = ["photo1.jpg", "photo2.jpg", "photo3.jpg", "photo4.jpg"];
+    let index = 0;
+    function startSlideshow() {
+      const img = document.getElementById("slideshow");
+      img.src = photos[index];
+      setInterval(() => {
+        index = (index + 1) % photos.length;
+        img.src = photos[index];
+        if(index === photos.length - 1) {
+          setTimeout(() => {
+            document.getElementById("finalMessage").style.display = "block";
+          }, 3000);
+        }
+      }, 3000);
+    }
+
+    // Emoji shower (balloons and flowers)
+    function startEmojiShower() {
+      const emojis = ["🎈", "🎉", "🌸", "🌼", "🌺", "💐"];
+      setInterval(() => {
+        const elem = document.createElement("div");
+        elem.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        elem.style.position = "fixed";
+        elem.style.left = Math.random() * window.innerWidth + "px";
+        elem.style.top = "-50px";
+        elem.style.fontSize = "2em";
+        elem.style.animation = "fall 5s linear infinite";
+        document.body.appendChild(elem);
+        setTimeout(() => elem.remove(), 6000);
+      }, 300);
+    }
+  </script>
+</body>
+</html>
